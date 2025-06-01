@@ -1,16 +1,32 @@
 import express from 'express';
 import logger from 'morgan';
+import dotenv from  'dotenv';
+import { createClient } from '@libsql/client';
 
 import { Server } from 'socket.io';
 import { createServer } from 'node:http';
+
+dotenv.config();
 
 const port = process.env.PORT ?? 3000;
 
 const app = express(); //manejador de rutas http
 const server = createServer(app); //el servidor http real, si hay peticion la manda a express para que la maneje
-const io = new Server(server, {
+const io = new Server(server, { //convierte el protocolo http a la conexion websocket despues del handshake
     connectionStateRecovery: {}
-}); //convierte el protocolo http a la conexion websocket despues del handshake
+}); 
+
+const db = createClient({
+    url: "libsql://flowing-warbird-andreatrasvina.aws-us-west-2.turso.io",
+    authToken: process.env.DB_TOKEN,
+});
+
+await db.execute(`
+    CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        content TEXT
+    )
+`);
 
 //responde a la accion cuando un usuario se ha conectado
 io.on('connection', (socket) => {
