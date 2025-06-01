@@ -1,11 +1,16 @@
 import express from 'express';
 import logger from 'morgan';
+import dotenv from 'dotenv';
 
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 
 import { setupChat } from './sockets/chat.js';
 import { db } from './config/db.js';
+
+import authRoutes from './routes/auth.js';
+
+dotenv.config();
 
 const port = process.env.PORT ?? 3000;
 
@@ -18,6 +23,8 @@ const io = new Server(server, { //convierte el protocolo http a la conexion webs
 //middleware
 app.use(logger('dev'));
 
+app.use(express.json());
+app.use('/api/auth', authRoutes);
 
 //crear db
 await db.execute(`
@@ -43,6 +50,10 @@ await db.execute(`
 app.get('/', (req, res) => {
     res.sendFile(process.cwd() + '/client/index.html');
 });
+
+// app.get('/', (req, res) => {
+//   res.send('API funcionando correctamente');
+// });
 
 //setup del chat
 setupChat(io);
