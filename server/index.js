@@ -17,7 +17,7 @@ const io = new Server(server, { //convierte el protocolo http a la conexion webs
 }); 
 
 const db = createClient({
-    url: "libsql://flowing-warbird-andreatrasvina.aws-us-west-2.turso.io",
+    url: "libsql://primary-rainmaker-andreatrasvina.aws-us-west-2.turso.io",
     authToken: process.env.DB_TOKEN,
 });
 
@@ -38,9 +38,22 @@ io.on('connection', (socket) => {
     });
 
     //responde a la accion cuando un usuario envia un mensaje
-    socket.on('chat message', (msg) => {
+    socket.on('chat message', async (msg) => {
+
+        let result
+
+        try {
+            result = await db.execute({
+                sql: 'INSERT INTO messages (content) VALUES (:msg)',
+                args: { msg }
+            });
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+        
         console.log('message: ' + msg); //para verlos aki cerquita jeje
-        io.emit('chat message', msg);
+        io.emit('chat message', msg, result.lastInsertRowid.toString());
     });
 });
 
