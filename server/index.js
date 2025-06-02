@@ -30,7 +30,8 @@ app.use('/api/auth', authRoutes);
 await db.execute(`
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        content TEXT
+        content TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 `);
 
