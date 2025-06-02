@@ -1,10 +1,14 @@
 import { db } from '../config/db.js';
 
 //responde a la accion cuando un usuario se ha conectado
+
+const users = {}
+
 export function setupChat(io) {
   io.on('connection', async (socket) => {
     console.log('a user has connected!!');
     const roomID = socket.handshake.auth.room_id
+    socket.join(roomID)
 
     //responde a la accion cuando un usuario se ha desconectado
     socket.on('disconnect', () => {
@@ -23,7 +27,6 @@ export function setupChat(io) {
         console.error(e);
         return;
       }
-
       console.log('message: ' + msg); //para verlos aki cerquita jeje
       io.emit('chat message', msg, result.lastInsertRowid.toString()); //c propagan a todos los usuarios
     });
@@ -39,9 +42,8 @@ export function setupChat(io) {
         console.error(e);
         return;
       }
-
       console.log('message: ' + msg_wrapper.msg); //para verlos aki cerquita jeje
-      io.emit('chat message', msg_wrapper.msg, result.lastInsertRowid.toString()); //c propagan a todos los usuarios
+      io.to(roomID).emit('chat message', msg_wrapper.msg, result.lastInsertRowid.toString()); //c propagan a todos los usuarios
     });
 
     //por si acaso.. recupera el msj
