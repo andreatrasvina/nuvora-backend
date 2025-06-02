@@ -9,6 +9,7 @@ import { setupChat } from './sockets/chat.js';
 import { db } from './config/db.js';
 
 import authRoutes from './routes/auth.js';
+import authUsers from './routes/users.js';
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/users', authUsers);
 
 // crear db
 await db.execute(
