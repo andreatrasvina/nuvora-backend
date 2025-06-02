@@ -7,7 +7,7 @@ const users = {}
 export function setupChat(io) {
   io.on('connection', async (socket) => {
     console.log('a user has connected!!');
-    const roomID = socket.handshake.auth.room_id ?? 1
+    const roomID = socket.handshake.auth.room_id || '1'
     console.log(roomID);
     socket.join(roomID)
 
@@ -18,21 +18,22 @@ export function setupChat(io) {
     });
 
     //responde a la accion cuando un usuario envia un mensaje
-    socket.on('send message', async (msg_wrapper) => {
+    socket.on('send message', async (msg) => {
       let result
       try {
+        console.log({ room_id: roomID, msg: msg });
         result = await db.execute({
           sql: 'INSERT INTO messages (room_id, content) VALUES (:room_id, :msg)',
-          args: msg_wrapper
+          args: { room_id: roomID, msg: msg }
         });
       } catch (e) {
         console.error(e);
         return;
       }
-      console.log('room message: ' + msg_wrapper.msg); //para verlos aki cerquita jeje
+      console.log('room message: ' + msg.msg); //para verlos aki cerquita jeje
       io.to(roomID).emit(
         'chat message',
-        msg_wrapper.msg,
+        msg,
         result.lastInsertRowid.toString()
       ); //c propagan a todos los usuarios
 

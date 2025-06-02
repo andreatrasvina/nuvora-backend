@@ -34,7 +34,7 @@
             e.preventDefault();
 
             if (input.value) {
-                socket.emit('send message', {room_id: roomID, msg: input.value});
+                socket.emit('send message', input.value);
                 input.value = '';
             }
         });
