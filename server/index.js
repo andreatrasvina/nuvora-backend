@@ -48,15 +48,13 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authUsers);
 
-// TODO: delete this uwu
-// await db.execute(`
-//   DROP TABLE IF EXISTS "rooms";
-// `)
-//
-// TODO: delete this uwu
-// await db.execute(`
-//   DROP TABLE IF EXISTS "messages";
-// `)
+await db.execute(`
+  DROP TABLE IF EXISTS "messages";
+`)
+
+await db.execute(`
+  DROP TABLE IF EXISTS "rooms";
+`)
 
 
 await db.execute(
@@ -70,6 +68,16 @@ await db.execute(
 await db.execute(
   `INSERT INTO rooms (name) VALUES("pictochat")`
 );
+
+await db.execute(
+  `INSERT INTO rooms (name) VALUES("Planet Dolan")`
+);
+
+await db.execute(
+  `INSERT INTO rooms (name) VALUES("Ena")`
+);
+
+
 
 await db.execute(
   `CREATE TABLE IF NOT EXISTS messages (
@@ -96,6 +104,11 @@ await db.execute(
 app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/client/index.html');
 });
+
+app.get('/room_tests/:id', (req, res) => {
+  res.sendFile(process.cwd() + '/client/rooms.html');
+});
+
 
 // setup del chat
 setupChat(io);
