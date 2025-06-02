@@ -9,7 +9,8 @@ import { setupChat } from './sockets/chat.js';
 import { db } from './config/db.js';
 
 import authRoutes from './routes/auth.js';
-import authUsers from './routes/users.js';
+import users from './routes/users.js';
+import rooms from './routes/rooms.js';
 
 dotenv.config();
 
@@ -46,7 +47,8 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
-app.use('/api/users', authUsers);
+app.use('/api/users', users);
+app.use('/api/rooms', rooms);
 
 await db.execute(`
   DROP TABLE IF EXISTS "messages";
