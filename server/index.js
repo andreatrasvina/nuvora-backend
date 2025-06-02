@@ -48,12 +48,36 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authUsers);
 
-// crear db
+// TODO: delete this uwu
+// await db.execute(`
+//   DROP TABLE IF EXISTS "rooms";
+// `)
+//
+// TODO: delete this uwu
+// await db.execute(`
+//   DROP TABLE IF EXISTS "messages";
+// `)
+
+
+await db.execute(
+  `CREATE TABLE IF NOT EXISTS rooms (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`
+);
+
+await db.execute(
+  `INSERT INTO rooms (name) VALUES("pictochat")`
+);
+
 await db.execute(
   `CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_id INTEGER DEFAULT 1,
         content TEXT,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(room_id) REFERENCES rooms(id)
     )`
 );
 
