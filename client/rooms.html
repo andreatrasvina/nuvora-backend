@@ -123,6 +123,7 @@
 <body>
 
     <section id="chat">
+
         <ul id="messages">
 
         </ul>
@@ -132,6 +133,29 @@
 
         </form>
     </section>
+    <ul id="rooms">
+    </ul>
+
+    <script>
+        const rooms = document.getElementById('rooms')
+        const SERVER = 'http://localhost:3000/'
+        async function get_rooms() {
+            const resp = await fetch(`${SERVER}api/rooms`)
+            if (!resp.ok) {
+                alert("esto no deberia de pasar error 500")
+            }
+            const json = await resp.json()
+            json.rooms.forEach(room => {
+                const anchor = document.createElement("a")
+                const li = document.createElement("li")
+                anchor.href = `${SERVER}rooms/${room.id}`
+                anchor.innerHTML = room.name
+                li.append(anchor)
+                rooms.append(li)
+            })
+        }
+        get_rooms()
+    </script>
 
 </body>
 

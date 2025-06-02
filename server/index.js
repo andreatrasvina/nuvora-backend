@@ -107,7 +107,8 @@ app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/client/index.html');
 });
 
-app.get('/room_tests/:id', (req, res) => {
+// esto es solamente para el cliente fake jijijiij
+app.get('/rooms/:id', (req, res) => {
   res.sendFile(process.cwd() + '/client/rooms.html');
 });
 
