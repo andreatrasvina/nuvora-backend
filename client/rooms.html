@@ -24,6 +24,7 @@
         const messages = document.getElementById('messages');
 
         socket.on('chat message', (msg, serverOffset) => {
+            console.log("rooms:", msg);
             const item = `<li>${msg}</li>`;
             messages.insertAdjacentHTML('beforeend', item);
             socket.auth.serverOffset = serverOffset;
@@ -33,7 +34,7 @@
             e.preventDefault();
 
             if (input.value) {
-                socket.emit('chat room', {room_id: roomID, msg: input.value});
+                socket.emit('send message', {room_id: roomID, msg: input.value});
                 input.value = '';
             }
         });
