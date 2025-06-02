@@ -1,15 +1,9 @@
 import { Router } from 'express';
-import { createClient } from '@libsql/client';
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
+import { db } from '../config/db.js';
 
 const router = Router();
-
-const db = createClient({
-  url: process.env.DATABASE_URL,
-  authToken: process.env.DB_TOKEN
-});
-
 
 //register
 router.post('/register', async(req, res) => {
@@ -88,7 +82,7 @@ router.post('/login', async(req, res) => {
     });
 
   } catch (e) {
-    console.error(error);
+    console.error(e);
     res.status(500).json({ message: 'Error en el servidor.' });
   }
 });
@@ -105,8 +99,8 @@ router.post('/logout', async (req, res) => {
   
     res.status(200).json({ message: 'Sesión cerrada.' });
 
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ message: 'Error al cerrar sesión.' });
   }
 });
