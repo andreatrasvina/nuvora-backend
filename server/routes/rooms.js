@@ -36,10 +36,6 @@ router.get('/', async (req, res) => {
 router.post('/', upload.single('image_field'), async function(req, res, next) {
   const { name, summary } = req.body
   // const imagePath = `${process.env.SERVER_URI}${req.file.path}`
-  let image64 = ""
-  if (req.file) {
-    image64 = req.file.buffer.toString('base64')
-  }
 
   try {
     await db.execute({
@@ -59,5 +55,24 @@ router.post('/', upload.single('image_field'), async function(req, res, next) {
     });
   }
 })
+
+router.get('/messages', async (req, res) => {
+  try {
+    const result = await db.execute({
+      sql: `SELECT * FROM messages`,
+    });
+
+    if (!result.rows) return res.status(404).json({ message: 'No hay mensajes unu.' });
+
+    res.status(200).json({
+      message: 'Consulta de salas exitosa',
+      messages: result.rows
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Error en el servidor.' });
+  }
+})
+
 
 export default router;
