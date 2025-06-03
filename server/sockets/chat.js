@@ -18,16 +18,22 @@ export function setupChat(io) {
 
     //responde a la accion cuando un usuario envia un mensaje
     socket.on('send message', async (msg_wrapper) => {
+      console.log("message sent");
       let result
-      const { media, msg } = msg_wrapper
+      const { media, msg, mime_type } = msg_wrapper
       // https://stackoverflow.com/questions/59478402/how-do-i-send-image-to-server-via-socket-io
       const media64 = Buffer.from(media).toString('base64')
       msg_wrapper.media = media64
 
       try {
         result = await db.execute({
-          sql: 'INSERT INTO messages (room_id, content, media) VALUES (:room_id, :msg, :media)',
-          args: { room_id: roomID, msg: msg, media: media64 }
+          sql: 'INSERT INTO messages (room_id, content, media, mime_type) VALUES (:room_id, :msg, :media, :mime_type)',
+          args: {
+            room_id: roomID,
+            msg: msg,
+            media: media64,
+            mime_type: mime_type
+          }
         });
       } catch (e) {
         console.error(e);
