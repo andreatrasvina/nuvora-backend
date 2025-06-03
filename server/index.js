@@ -76,25 +76,24 @@ await db.execute(
     )`
 );
 
-await db.execute(
-  `INSERT INTO rooms (name) VALUES("pictochat")`
-);
-
-await db.execute(
-  `INSERT INTO rooms (name) VALUES("Planet Dolan")`
-);
-
-await db.execute(
-  `INSERT INTO rooms (name) VALUES("Ena")`
-);
-
-
+// await db.execute(
+//   `INSERT INTO rooms (name) VALUES("pictochat")`
+// );
+//
+// await db.execute(
+//   `INSERT INTO rooms (name) VALUES("Planet Dolan")`
+// );
+//
+// await db.execute(
+//   `INSERT INTO rooms (name) VALUES("Ena")`
+// );
 
 await db.execute(
   `CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         room_id INTEGER DEFAULT 1,
         content TEXT,
+        media TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(room_id) REFERENCES rooms(id)
     )`
