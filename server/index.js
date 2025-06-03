@@ -94,6 +94,7 @@ await db.execute(
         room_id INTEGER DEFAULT 1,
         content TEXT,
         media TEXT,
+        mime_type TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(room_id) REFERENCES rooms(id)
     )`
