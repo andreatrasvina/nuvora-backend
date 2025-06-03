@@ -5,14 +5,15 @@ import path from 'path'
 
 const router = Router();
 
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => {
-    cb(null, file.originalname)
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: 'uploads/',
+//   filename: (req, file, cb) => {
+//     console.log('hellope', file);
+//     cb(null, file.originalname)
+//   }
+// });
 
-const upload = multer({ storage })
+const upload = multer({})
 
 router.get('/', async (req, res) => {
   try {
@@ -34,14 +35,19 @@ router.get('/', async (req, res) => {
 
 router.post('/', upload.single('image_field'), async function(req, res, next) {
   const { name, summary } = req.body
-  const imagePath = `${process.env.SERVER_URI}${req.file.path}`
+  // const imagePath = `${process.env.SERVER_URI}${req.file.path}`
+  let image64 = ""
+  if (req.file) {
+    image64 = req.file.buffer.toString('base64')
+  }
+
   try {
     await db.execute({
       sql: `
       INSERT INTO rooms (name, summary, image)
       VALUES (?, ?, ?)
       `,
-      args: [name, summary, imagePath],
+      args: [name, summary, image64],
     });
     res.status(200).json({
       message: 'Sala creada correctamente.'

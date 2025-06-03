@@ -20,6 +20,7 @@ export function setupChat(io) {
     socket.on('send message', async (msg_wrapper) => {
       let result
       const { media, msg } = msg_wrapper
+      // https://stackoverflow.com/questions/59478402/how-do-i-send-image-to-server-via-socket-io
       const media64 = Buffer.from(media).toString('base64')
       msg_wrapper.media = media64
 

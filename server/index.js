@@ -120,6 +120,12 @@ app.get('/rooms/:id', (req, res) => {
   res.sendFile(process.cwd() + '/client/rooms.html');
 });
 
+// esto es solamente para el cliente fake jijijiij
+app.get('/test/', (req, res) => {
+  res.sendFile(process.cwd() + '/client/image.html');
+});
+
+
 
 // setup del chat
 setupChat(io);
