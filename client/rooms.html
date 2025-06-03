@@ -22,21 +22,38 @@
         const form = document.getElementById('form');
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
+        const files_container = document.getElementById('media');
 
-        socket.on('chat message', (msg, serverOffset) => {
+        socket.on('chat message', (msg_wrapper, serverOffset) => {
+            const {msg, media} = msg_wrapper
+            console.log(msg_wrapper);
+            const img = new Image();
+            console.log(msg_wrapper);
             console.log("rooms:", msg);
-            const item = `<li>${msg}</li>`;
+            const item = `
+            <li>
+            <img style="width: 10%;" src="data:image/jpg;base64,${media}" alt="">
+                ${msg}
+            </li>
+            `;
             messages.insertAdjacentHTML('beforeend', item);
             socket.auth.serverOffset = serverOffset;
         });
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            const media = files_container.files[0]
 
-            if (input.value) {
-                socket.emit('send message', input.value);
-                input.value = '';
-            }
+            const reader = new FileReader();
+            reader.onload = function () {
+                const bytes = new Uint8Array(this.result);
+                if (input.value) {
+                    socket.emit('send message', {media: bytes, msg: input.value});
+                    input.value = '';
+                }
+            };
+
+            reader.readAsArrayBuffer(media);
         });
 
     </script>
@@ -82,7 +99,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             overflow: hidden;
-            width: 350px;
+            width: 950px;
             height: 100%;
             position: relative;
         }
@@ -124,15 +141,16 @@
 
     <section id="chat">
 
-        <ul id="messages">
-
+        <ul style id="messages">
         </ul>
+
         <form id="form">
             <input type="text" name="message" id="input" placeholder="Type a message" autocomplete="off" />
+            <input type="file" name="media" id="media" autocomplete="off" />
             <button type="submit">Enviar</button>
-
         </form>
     </section>
+
     <ul id="rooms">
     </ul>
 
@@ -145,14 +163,15 @@
                 alert("esto no deberia de pasar error 500")
             }
             const json = await resp.json()
-            json.rooms.forEach(room => {
-                const anchor = document.createElement("a")
-                const li = document.createElement("li")
-                anchor.href = `${SERVER}rooms/${room.id}`
-                anchor.innerHTML = room.name
-                li.append(anchor)
-                rooms.append(li)
-            })
+            // let i = 0
+            // json.rooms.forEach(room => {
+            //     const anchor = document.createElement("a")
+            //     const li = document.createElement("li")
+            //     anchor.href = `${SERVER}rooms/${room.id}`
+            //     anchor.innerHTML = room.name
+            //     li.append(anchor)
+            //     rooms.append(li)
+            // })
         }
         get_rooms()
     </script>
