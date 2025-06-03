@@ -30,7 +30,7 @@ export function setupChat(io) {
         console.error(e);
         return;
       }
-      console.log('room message: ' + msg.msg); //para verlos aki cerquita jeje
+      console.log('room message: ' + msg); //para verlos aki cerquita jeje
       io.to(roomID).emit(
         'chat message',
         msg,
