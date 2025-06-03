@@ -26,10 +26,7 @@
 
         socket.on('chat message', (msg_wrapper, serverOffset) => {
             const {msg, media} = msg_wrapper
-            console.log(msg_wrapper);
             const img = new Image();
-            console.log(msg_wrapper);
-            console.log("rooms:", msg);
             const item = `
             <li>
             <img style="width: 10%;" src="data:image/jpg;base64,${media}" alt="">
@@ -45,12 +42,15 @@
             const media = files_container.files[0]
 
             const reader = new FileReader();
+
             reader.onload = function () {
                 const bytes = new Uint8Array(this.result);
-                socket.emit('send message', {media: bytes, msg: input.value});
+                const mediaType = media.type.split('/')[0]
+                socket.emit('send message', {media: bytes, msg: input.value, mime_type: mediaType});
                 input.value = '';
-                files_container.files = []
+                // files_container.files = []
             };
+
             if (media) {
                 reader.readAsArrayBuffer(media);
             } else {
