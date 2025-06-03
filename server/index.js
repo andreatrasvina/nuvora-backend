@@ -50,13 +50,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', users);
 app.use('/api/rooms', rooms);
 
-await db.execute(`
-  DROP TABLE IF EXISTS "messages";
-`)
-
-await db.execute(`
-  DROP TABLE IF EXISTS "rooms";
-`)
+// await db.execute(`
+//   DROP TABLE IF EXISTS "messages";
+// `)
+//
+// await db.execute(`
+//   DROP TABLE IF EXISTS "rooms";
+// `)
 
 
 await db.execute(
