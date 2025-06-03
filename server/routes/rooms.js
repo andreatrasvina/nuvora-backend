@@ -8,9 +8,6 @@ const router = Router();
 const storage = multer.diskStorage({
   destination: 'uploads/',
   filename: (req, file, cb) => {
-    // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    // const ext = path.extname(file.originalname);
-    // cb(null, file.fieldname + '-' + uniqueSuffix + ext);
     cb(null, file.originalname)
   }
 });
@@ -19,7 +16,6 @@ const upload = multer({ storage })
 
 router.get('/', async (req, res) => {
   try {
-    // console.log()
     const result = await db.execute({
       sql: `SELECT * FROM rooms`,
     });
@@ -31,7 +27,7 @@ router.get('/', async (req, res) => {
       rooms: result.rows
     });
   } catch (e) {
-    // console.error(e);
+    console.error(e);
     res.status(500).json({ message: 'Error en el servidor.' });
   }
 })
@@ -39,7 +35,6 @@ router.get('/', async (req, res) => {
 router.post('/', upload.single('image_field'), async function(req, res, next) {
   const { name, summary } = req.body
   const imagePath = `${process.env.SERVER_URI}${req.file.path}`
-
   try {
     await db.execute({
       sql: `
@@ -48,7 +43,6 @@ router.post('/', upload.single('image_field'), async function(req, res, next) {
       `,
       args: [name, summary, imagePath],
     });
-
     res.status(200).json({
       message: 'Sala creada correctamente.'
     });
@@ -58,7 +52,6 @@ router.post('/', upload.single('image_field'), async function(req, res, next) {
       message: 'Error en el mugroso servidor.'
     });
   }
-
 })
 
 export default router;
