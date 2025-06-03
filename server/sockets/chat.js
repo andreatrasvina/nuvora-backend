@@ -20,11 +20,13 @@ export function setupChat(io) {
     socket.on('send message', async (msg_wrapper) => {
       let result
       const { media, msg } = msg_wrapper
-      msg_wrapper.media = msg_wrapper.media.toString("base64")
+      const media64 = Buffer.from(media).toString('base64')
+      msg_wrapper.media = media64
+
       try {
         result = await db.execute({
           sql: 'INSERT INTO messages (room_id, content, media) VALUES (:room_id, :msg, :media)',
-          args: { room_id: roomID, msg: msg, media: media }
+          args: { room_id: roomID, msg: msg, media: media64 }
         });
       } catch (e) {
         console.error(e);
@@ -47,7 +49,8 @@ export function setupChat(io) {
           args: [socket.handshake.auth.serverOffset ?? 0, roomID]
         });
         results.rows.forEach(row => {
-          const media = Buffer.from(row.media).toString('base64');
+          // const media = Buffer.from(row.media).toString('base64');
+          const media = row.media
           socket.emit('chat message', { media: media, msg: row.content }, row.id.toString());
         });
       } catch (e) {
