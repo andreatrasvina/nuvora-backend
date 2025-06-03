@@ -105,4 +105,54 @@ router.post('/logout', async (req, res) => {
   }
 });
 
+//update
+router.put('/update/:id', async (req, res) => {
+  const { name, email, password, profile_picture } = req.body;
+  const { id } = req.params;
+
+  try {
+    const fields = { name, email, profile_picture };
+
+    const updates = [];
+    const values = [];
+
+    //opcional
+    for (const [key, value] of Object.entries(fields)) {
+      if (value) {
+        updates.push(`${key} = ?`);
+        values.push(value);
+      }
+    }
+
+    //contarsena
+    if (password) {
+      const hashed = await bcrypt.hash(password, 10);
+      updates.push('password = ?');
+      values.push(hashed);
+    }
+
+    //envia algo
+    if (updates.length === 0) {
+      return res.status(400).json({
+        message: 'No actualizaste nada.'
+      });
+    }
+
+    const sql = `UPDATE users SET ${updates.join(', ')} WHERE id = ?`;
+    values.push(id);
+
+    await db.execute({ sql, args: values });
+
+    res.status(200).json({
+      message: 'Usuario actualizado.'
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      message: 'Error al actualizae.'
+    });
+  }
+});
+
 export default router;
