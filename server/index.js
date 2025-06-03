@@ -1,9 +1,12 @@
 import express from 'express';
 import logger from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path'
 
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
+import { fileURLToPath } from 'url'
+
 
 import { setupChat } from './sockets/chat.js';
 import { db } from './config/db.js';
@@ -11,6 +14,9 @@ import { db } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import users from './routes/users.js';
 import rooms from './routes/rooms.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -22,7 +28,8 @@ const server = createServer(app); //el servidor http real, si hay peticion la ma
 // *******************************************************************
 // ¡¡¡CAMBIO CLAVE AQUÍ: Define el origen de tu frontend Next.js!!!
 // Tu error indica que es http://localhost:3001
-const FRONTEND_ORIGIN = 'http://localhost:3001';
+// const FRONTEND_ORIGIN = 'http://localhost:3001';
+const FRONTEND_ORIGIN = '*';
 // *******************************************************************
 
 const io = new Server(server, {
@@ -44,7 +51,7 @@ app.use(cors({
   origin: FRONTEND_ORIGIN, // <--- Importante: Permite el origen de tu frontend
   credentials: true // Si manejas cookies o credenciales en tus rutas REST
 }));
-
+app.use('/uploads', express.static('uploads'))
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', users);
@@ -63,6 +70,8 @@ await db.execute(
   `CREATE TABLE IF NOT EXISTS rooms (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
+        summary TEXT,
+        image TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )`
 );

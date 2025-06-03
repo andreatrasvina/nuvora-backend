@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+
+<body>
+    <!-- <form style="display: flex; flex-direction:column;"> -->
+    <!--     <label for="">image</label> -->
+    <!--     <input type="file" name="image" id="image" value=""> -->
+    <!--     <label for="">name</label> -->
+    <!--     <input type="text" name="name" value=""> -->
+    <!--     <label for="">detalles</label> -->
+    <!--     <input type="text" name="summary" value=""> -->
+    <!--     <button type="submit">subir</button> -->
+    <!-- </form> -->
+    <form action="http://localhost:3000/api/rooms" enctype="multipart/form-data" method="post">
+        <div class="form-group">
+            <input type="text" name="name" value="">
+            <input type="text" name="summary" value="">
+            <input type="file" name="image_field">
+        </div>
+        <input type="submit" class="btn btn-primary" value="Upload">
+    </form>
+</body>
+
+<script>
+
+    // const form = document.querySelector("form")
+    // const files_container = document.getElementById('image');
+
+    // async function poop(e) {
+    //     e.preventDefault();
+    //     const form_data = new FormData(form);
+    //     const image = files_container.files[0]
+    //     form_data.append("image_field", image)
+    //     const data = Object.fromEntries(form_data)
+    //
+    //     console.log(data);
+    //
+    //     const response = await fetch(
+    //         'http://localhost:3000/api/rooms',
+    //         {
+    //             method: "POST",
+    //             body: JSON.stringify(data),
+    //             headers: {"Content-type": "multipart/form-data"}
+    //         }
+    //     )
+    //
+    //     const json = await response.json()
+    //     console.log(json)
+    //
+    // }
+
+    // form.addEventListener('submit', poop)
+
+</script>
+
+</html>
