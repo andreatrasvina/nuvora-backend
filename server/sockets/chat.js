@@ -20,25 +20,28 @@ export function setupChat(io) {
     socket.on('send message', async (msg_wrapper) => {
       console.log("message sent");
       let result
-      const { media, msg, mime_type } = msg_wrapper
+      const { media, msg, mime_type, user_id, name } = msg_wrapper
       // https://stackoverflow.com/questions/59478402/how-do-i-send-image-to-server-via-socket-io
       const media64 = Buffer.from(media).toString('base64')
       msg_wrapper.media = media64
 
       try {
         result = await db.execute({
-          sql: 'INSERT INTO messages (room_id, content, media, mime_type) VALUES (:room_id, :msg, :media, :mime_type)',
+          sql: 'INSERT INTO messages (room_id, content, media, mime_type, user_id) VALUES (:room_id, :msg, :media, :mime_type, :user_id)',
           args: {
             room_id: roomID,
             msg: msg,
             media: media64,
-            mime_type: mime_type
+            mime_type: mime_type,
+            user_id: user_id
           }
         });
       } catch (e) {
         console.error(e);
         return;
       }
+
+
       console.log('room message: ' + msg, media); //para verlos aki cerquita jeje
       io.to(roomID).emit(
         'chat message',
@@ -51,14 +54,20 @@ export function setupChat(io) {
     //por si acaso.. recupera el msj
     if (!socket.recovered) {
       try {
+        const query = `SELECT messages.id, messages.content, messages.media, messages.mime_type, messages.user_id FROM messages WHERE id > ? AND room_id = ?`
         const results = await db.execute({
-          sql: 'SELECT id, content, media, mime_type FROM messages WHERE id > ? AND room_id = ?',
+          sql: `
+          SELECT messages.id, messages.content, messages.media, messages.mime_type, messages.user_id, users.id, users.name
+          FROM messages
+          FULL OUTER JOIN users ON users.id=messages.user_id
+          WHERE messages.id > ? AND messages.room_id = ?;`
+          ,
           args: [socket.handshake.auth.serverOffset ?? 0, roomID]
         });
         results.rows.forEach(row => {
           // const media = Buffer.from(row.media).toString('base64');
           const media = row.media
-          socket.emit('chat message', { media: media, msg: row.content, mime_type: row.mime_type }, row.id.toString());
+          socket.emit('chat message', { user_id: row.user_id, name: row.name, media: media, msg: row.content, mime_type: row.mime_type }, row.id.toString());
         });
       } catch (e) {
         console.error(e);

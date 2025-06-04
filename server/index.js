@@ -76,28 +76,16 @@ await db.execute(
     )`
 );
 
-// await db.execute(
-//   `INSERT INTO rooms (name) VALUES("pictochat")`
-// );
-//
-// await db.execute(
-//   `INSERT INTO rooms (name) VALUES("Planet Dolan")`
-// );
-//
-// await db.execute(
-//   `INSERT INTO rooms (name) VALUES("Ena")`
-// );
+await db.execute(
+  `INSERT INTO rooms (name) VALUES("pictochat")`
+);
 
 await db.execute(
-  `CREATE TABLE IF NOT EXISTS messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        room_id INTEGER DEFAULT 1,
-        content TEXT,
-        media TEXT,
-        mime_type TEXT,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(room_id) REFERENCES rooms(id)
-    )`
+  `INSERT INTO rooms (name) VALUES("Planet Dolan")`
+);
+
+await db.execute(
+  `INSERT INTO rooms (name) VALUES("Ena")`
 );
 
 await db.execute(
@@ -110,6 +98,21 @@ await db.execute(
         profile_picture TEXT
     )`
 );
+
+await db.execute(
+  `CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_id INTEGER DEFAULT 1,
+        user_id INTEGER DEFAULT 1,
+        content TEXT,
+        media TEXT,
+        mime_type TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(room_id) REFERENCES rooms(id)
+        FOREIGN KEY(user_id) REFERENCES users(id)
+    )`
+);
+
 
 // ruta temporal jeje
 app.get('/', (req, res) => {
