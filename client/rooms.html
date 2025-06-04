@@ -23,6 +23,7 @@
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
         const files_container = document.getElementById('media');
+        const userID = 3
 
         socket.on('chat message', (msg_wrapper, serverOffset) => {
             const {msg, media} = msg_wrapper
@@ -46,7 +47,7 @@
             reader.onload = function () {
                 const bytes = new Uint8Array(this.result);
                 const mediaType = media.type.split('/')[0]
-                socket.emit('send message', {media: bytes, msg: input.value, mime_type: mediaType});
+                socket.emit('send message', {media: bytes, msg: input.value, mime_type: mediaType, user_id: userID});
                 input.value = '';
                 // files_container.files = []
             };
@@ -55,7 +56,7 @@
                 reader.readAsArrayBuffer(media);
             } else {
                 if (input.value) {
-                    socket.emit('send message', {media: "", msg: input.value});
+                    socket.emit('send message', {media: "", msg: input.value, user_id: userID});
                     input.value = '';
                     files_container.files = []
                 }
