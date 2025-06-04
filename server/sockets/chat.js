@@ -52,13 +52,13 @@ export function setupChat(io) {
     if (!socket.recovered) {
       try {
         const results = await db.execute({
-          sql: 'SELECT id, content, media FROM messages WHERE id > ? AND room_id = ?',
+          sql: 'SELECT id, content, media, mime_type FROM messages WHERE id > ? AND room_id = ?',
           args: [socket.handshake.auth.serverOffset ?? 0, roomID]
         });
         results.rows.forEach(row => {
           // const media = Buffer.from(row.media).toString('base64');
           const media = row.media
-          socket.emit('chat message', { media: media, msg: row.content }, row.id.toString());
+          socket.emit('chat message', { media: media, msg: row.content, mime_type: row.mime_type }, row.id.toString());
         });
       } catch (e) {
         console.error(e);
