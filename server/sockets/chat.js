@@ -53,13 +53,13 @@ export function setupChat(io) {
       console.log('room message: ' + msg, media); //para verlos aki cerquita jeje
       io.to(roomID).emit(
         'chat message',
-        { 
-          msg: msg, 
-          media: media64, 
-          mime_type: mime_type, 
-          user_id: user_id, 
-          name: name,       
-          timestamp: messageTimestamp 
+        {
+          msg: msg,
+          media: media64,
+          mime_type: mime_type,
+          user_id: user_id,
+          name: name,
+          timestamp: messageTimestamp
         },
         result.lastInsertRowid.toString()
       ); //c propagan a todos los usuarios
@@ -80,16 +80,18 @@ export function setupChat(io) {
           ,
           args: [socket.handshake.auth.serverOffset ?? 0, roomID]
         });
+        socket.emit('messages length', results.rows.length)
         results.rows.forEach(row => {
           // const media = Buffer.from(row.media).toString('base64');
           const media = row.media
-          socket.emit('chat message', 
-            { user_id: row.user_id, 
-              name: row.name, 
-              media: media, 
-              msg: row.content, 
+          socket.emit('chat message',
+            {
+              user_id: row.user_id,
+              name: row.name,
+              media: media,
+              msg: row.content,
               mime_type: row.mime_type,
-              timestamp: row.timestamp 
+              timestamp: row.timestamp
             }, row.id.toString());
         });
       } catch (e) {
