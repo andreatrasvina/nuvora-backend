@@ -114,8 +114,8 @@ router.post('/join-room', async (req, res) => {
     res.status(200).json({ message: 'Te has unido a la sala correctamente.' });
 
   } catch (e) {
-    
-    if (e.message.includes('Ya estas en esta sala')) { 
+
+    if (e.message.includes('Ya estas en esta sala')) {
       return res.status(409).json({ message: 'Ya eres miembro de esta sala.' });
     }
 
@@ -153,6 +153,33 @@ router.get('/user-rooms/:userId', async (req, res) => {
     res.status(500).json({ message: 'Error al obtener salas del usuario.' });
   }
 });
+
+//obtener las salas unidas del usuario
+router.get('/user-rooms-situationship/:roomId/:userId', async (req, res) => {
+  const { roomId, userId } = req.params;
+  try {
+    const result = await db.execute({
+      sql: `SELECT * FROM user_rooms WHERE user_id = ? AND room_id = ?`,
+      // sql: `SELECT * FROM user_rooms`,
+      args: [userId, roomId],
+      // args: [userId],
+    });
+
+    if (!result.rows || result.rows.length === 0) {
+      return res.status(200).json({ message: 'El usuario no se ha unido a esta sala.', rooms: [] });
+    }
+
+    res.status(200).json({
+      message: 'Consultas exitosas',
+      rooms: result.rows
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Error al obtener salas del usuario.' });
+  }
+});
+
 
 //eliminar sala
 router.post('/leave-room', async (req, res) => {
