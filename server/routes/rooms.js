@@ -101,6 +101,59 @@ router.post('/create-room', async function(req, res, next) {
   }
 });
 
+//unirse a sala
+router.post('/join-room', async (req, res) => {
+  const { userId, roomId } = req.body;
+
+  try {
+    await db.execute({
+      sql: `INSERT INTO user_rooms (user_id, room_id) VALUES (?, ?)`,
+      args: [userId, roomId],
+    });
+
+    res.status(200).json({ message: 'Te has unido a la sala correctamente.' });
+
+  } catch (e) {
+    
+    if (e.message.includes('Ya estas en esta sala')) { 
+      return res.status(409).json({ message: 'Ya eres miembro de esta sala.' });
+    }
+
+    console.error(e);
+    res.status(500).json({ message: 'Error al unirte a la sala.' });
+  }
+});
+
+
+//obtener las salas unidas del usuario
+router.get('/user-rooms/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await db.execute({
+      sql: `
+        SELECT r.id, r.name, r.summary, r.image
+        FROM rooms r
+        JOIN user_rooms ur ON r.id = ur.room_id
+        WHERE ur.user_id = ?
+      `,
+      args: [userId],
+    });
+
+    if (!result.rows || result.rows.length === 0) {
+      return res.status(200).json({ message: 'El usuario no se ha unido a ninguna sala.', rooms: [] });
+    }
+
+    res.status(200).json({
+      message: 'Consultas exitosas',
+      rooms: result.rows
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Error al obtener salas del usuario.' });
+  }
+});
+
 router.get('/messages', async (req, res) => {
   try {
     const result = await db.execute({

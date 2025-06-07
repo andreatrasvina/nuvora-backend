@@ -113,6 +113,17 @@ await db.execute(
     )`
 );
 
+await db.execute(
+  `CREATE TABLE IF NOT EXISTS user_rooms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    room_id INTEGER NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE
+  )`
+);
+
 
 // ruta temporal jeje
 app.get('/', (req, res) => {
