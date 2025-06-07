@@ -33,8 +33,31 @@ router.get('/', async (req, res) => {
   }
 });
 
+// TODO: make this db query to check if the requested room id is associated with the user id, which also will be sent
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.execute({
+      sql: `SELECT * FROM rooms where id = ?`,
+      args: [id],
+    });
+
+    if (!result.rows.length) return res.status(404).json({ message: 'No existe esta sala.' });
+
+    res.status(200).json({
+      message: 'Consulta de salas exitosa',
+      room: result.rows[0]
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Error en el servidor.' });
+  }
+});
+
+
 router.post('/create-room', async function(req, res, next) {
-  const { name, summary, image } = req.body; 
+  const { name, summary, image } = req.body;
 
   if (!name || !name.trim()) {
     return res.status(400).json({

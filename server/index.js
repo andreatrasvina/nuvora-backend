@@ -76,17 +76,17 @@ await db.execute(
     )`
 );
 
-await db.execute(
-  `INSERT INTO rooms (name) VALUES("pictochat")`
-);
-
-await db.execute(
-  `INSERT INTO rooms (name) VALUES("Planet Dolan")`
-);
-
-await db.execute(
-  `INSERT INTO rooms (name) VALUES("Ena")`
-);
+// await db.execute(
+//   `INSERT INTO rooms (name) VALUES("pictochat")`
+// );
+//
+// await db.execute(
+//   `INSERT INTO rooms (name) VALUES("Planet Dolan")`
+// );
+//
+// await db.execute(
+//   `INSERT INTO rooms (name) VALUES("Ena")`
+// );
 
 await db.execute(
   `CREATE TABLE IF NOT EXISTS users (

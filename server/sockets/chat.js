@@ -26,6 +26,7 @@ export function setupChat(io) {
       msg_wrapper.media = media64
 
       let messageTimestamp;
+      let profilePicture;
 
       try {
         result = await db.execute({
@@ -45,6 +46,12 @@ export function setupChat(io) {
         });
         messageTimestamp = insertedMessage.rows[0].timestamp;
 
+        const user = await db.execute({
+          sql: 'SELECT profile_picture FROM users WHERE id = ?',
+          args: [user_id],
+        });
+        profilePicture = user.rows[0].profile_picture;
+
       } catch (e) {
         console.error(e);
         return;
@@ -58,6 +65,7 @@ export function setupChat(io) {
           media: media64,
           mime_type: mime_type,
           user_id: user_id,
+          profile_picture: profilePicture,
           name: name,
           timestamp: messageTimestamp
         },
