@@ -72,7 +72,7 @@ export function setupChat(io) {
         const query = `SELECT messages.id, messages.content, messages.media, messages.mime_type, messages.user_id FROM messages WHERE id > ? AND room_id = ?`
         const results = await db.execute({
           sql: `
-          SELECT messages.id, messages.content, messages.media, messages.mime_type, messages.user_id, messages.timestamp, users.id, users.name
+          SELECT messages.id, messages.content, messages.media, messages.mime_type, messages.user_id, messages.timestamp, users.id, users.name, users.profile_picture
           FROM messages
           FULL OUTER JOIN users ON users.id=messages.user_id
           WHERE messages.id > ? AND messages.room_id = ?
@@ -87,6 +87,7 @@ export function setupChat(io) {
           socket.emit('chat message',
             {
               user_id: row.user_id,
+              profile_picture: row.profile_picture,
               name: row.name,
               media: media,
               msg: row.content,
