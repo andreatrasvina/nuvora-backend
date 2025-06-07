@@ -1,7 +1,7 @@
 import { Router } from 'express';
+import { createClient } from '@libsql/client';
 import { db } from '../config/db.js';
 import multer from 'multer'
-import path from 'path'
 
 const router = Router();
 
@@ -31,30 +31,52 @@ router.get('/', async (req, res) => {
     console.error(e);
     res.status(500).json({ message: 'Error en el servidor.' });
   }
-})
+});
 
-router.post('/', upload.single('image_field'), async function(req, res, next) {
-  const { name, summary } = req.body
-  // const imagePath = `${process.env.SERVER_URI}${req.file.path}`
+router.post('/create-room', async function(req, res, next) {
+  const { name, summary, image } = req.body; 
+
+  if (!name || !name.trim()) {
+    return res.status(400).json({
+      message: 'El nombre de la sala es obligatorio.'
+    });
+  }
+
+  let base64ImageToStore = null;
+
+  if (image) {
+    try {
+      const cleanBase64 = image.replace(/^data:image\/\w+;base64,/, '');
+      base64ImageToStore = cleanBase64;
+    } catch (e) {
+      console.error("Error al procesar la imagen Base64 para la sala:", e);
+      return res.status(400).json({ message: "Formato de imagen invalido." });
+    }
+  }
 
   try {
-    await db.execute({
+    const result = await db.execute({ //guarda el resultado para obtener el id
       sql: `
       INSERT INTO rooms (name, summary, image)
       VALUES (?, ?, ?)
       `,
-      args: [name, summary, image64],
+      args: [name, summary, base64ImageToStore],
     });
+
+    const newRoomId = result.lastInsertRowid;
+
     res.status(200).json({
-      message: 'Sala creada correctamente.'
+      message: 'Sala creada correctamente.',
+      roomId: newRoomId.toString()
     });
+
   } catch (e) {
-    console.log(e);
+    console.error(e);
     res.status(500).json({
-      message: 'Error en el mugroso servidor.'
+      message: 'Error al crear la sala en el servidor.'
     });
   }
-})
+});
 
 router.get('/messages', async (req, res) => {
   try {
@@ -72,7 +94,7 @@ router.get('/messages', async (req, res) => {
     console.error(e);
     res.status(500).json({ message: 'Error en el servidor.' });
   }
-})
+});
 
 
 export default router;
