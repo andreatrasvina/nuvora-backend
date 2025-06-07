@@ -154,6 +154,26 @@ router.get('/user-rooms/:userId', async (req, res) => {
   }
 });
 
+//eliminar sala
+router.post('/leave-room', async (req, res) => {
+  const { userId, roomId } = req.body;
+
+  try {
+    const result = await db.execute({
+      sql: `DELETE FROM user_rooms WHERE user_id = ? AND room_id = ?`,
+      args: [userId, roomId],
+    });
+
+    if (result.rowsAffected === 0) {
+      return res.status(404).json({ message: 'No eres miembro de esta sala o la sala no existe.' });
+    }
+    res.status(200).json({ message: 'Has salido de la sala correctamente.' });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Error al salir de la sala.' });
+  }
+});
+
 router.get('/messages', async (req, res) => {
   try {
     const result = await db.execute({
